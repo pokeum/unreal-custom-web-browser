@@ -1,4 +1,4 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
-#include "DemoGameModeBase.h"
+#include "Demo/Public/DemoGameModeBase.h"
 
