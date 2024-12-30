@@ -41,6 +41,9 @@ TSharedRef<SWidget> UCustomWebBrowser::RebuildWidget()
 			.OnLoadStarted(BIND_UOBJECT_DELEGATE(FOnLoadStartedDelegate, HandleOnLoadStarted))
 			.OnLoadCompleted(BIND_UOBJECT_DELEGATE(FOnLoadCompletedDelegate, HandleOnLoadCompleted));
 
+		// https://dev.epicgames.com/documentation/en-us/unreal-engine/API/Runtime/WebBrowser/SWebBrowser/BindUObject?application_version=5.3
+		WebBrowserWidget->BindUObject(BIND_UOBJECT_NAME, this, true);
+		
 		return WebBrowserWidget.ToSharedRef();
 	}
 }
@@ -150,6 +153,33 @@ void UCustomWebBrowser::BindUObject(const FString& Name, UObject* Object, bool b
 	if (WebBrowserWidget.IsValid())
 	{
 		WebBrowserWidget->BindUObject(Name, Object, bIsPermanent);
+	}
+}
+
+void UCustomWebBrowser::SendMessage(const FString& Message)
+{
+	if (!WebBrowserWidget.IsValid()) return;
+
+	Logging(FString::Printf(TEXT("window.ue.uewebbrowser.sendmessage(\"%s\")"), *Message));
+	
+	if (OnMessageReceived.IsBound())
+	{
+		if (IsInGameThread())
+		{
+			OnMessageReceived.Broadcast(Message);
+		}
+		else
+		{
+			// Retry on the GameThread.
+			TWeakObjectPtr<UCustomWebBrowser> WeakThis = this;
+			FFunctionGraphTask::CreateAndDispatchWhenReady([WeakThis, Message]()
+			{
+				if (WeakThis.IsValid())
+				{
+					WeakThis->SendMessage(Message);
+				}
+			}, TStatId(), nullptr, ENamedThreads::GameThread);
+		}
 	}
 }
 
