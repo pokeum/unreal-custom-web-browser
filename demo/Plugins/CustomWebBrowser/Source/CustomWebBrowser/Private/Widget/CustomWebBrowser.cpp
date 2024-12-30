@@ -1,14 +1,7 @@
 #include "Widget/CustomWebBrowser.h"
-
 #include "SWebBrowser.h"
-#include "Async/TaskGraphInterfaces.h"
 #include "Widgets/Layout/SBox.h"
 #include "Widgets/Text/STextBlock.h"
-
-#if WITH_EDITOR
-#include "AssetRegistryModule.h"
-#include "Factories/MaterialFactoryNew.h"
-#endif
 
 #define LOCTEXT_NAMESPACE "CustomWebBrowser"
 
