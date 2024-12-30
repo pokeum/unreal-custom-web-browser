@@ -5,6 +5,7 @@
 #include "Components/Widget.h"
 #include "CustomWebBrowser.generated.h"
 
+#define BIND_UOBJECT_NAME	TEXT("uewebbrowser")
 #define MESSAGING_SCHEME	TEXT("uewebbrowser://")
 
 /**
@@ -111,6 +112,9 @@ protected:
 
 public:
 	void BindUObject(const FString& Name, UObject* Object, bool bIsPermanent = true) const;
+	
+	UFUNCTION()
+	void SendMessage(const FString& Message);
 	
 public:
 	DECLARE_DELEGATE_RetVal_TwoParams(bool, FOnBeforeBrowse, const FString&, const FWebNavigationRequest&);
