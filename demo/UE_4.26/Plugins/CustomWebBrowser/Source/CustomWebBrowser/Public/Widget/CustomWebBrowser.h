@@ -139,6 +139,21 @@ public:
 protected:
 	/** Called to allow bypassing page content on load. */
 	bool HandleOnLoadUrl(const FString& Method, const FString& Url, FString& Response);
+
+//////////////////////////////////////////////////////////////////////////
+/// OnLoadStarted
+
+public:
+	DECLARE_DELEGATE(FOnLoadStartedDelegate);
+	DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnLoadStarted);
+
+protected:
+	/** Called when document loading started. */
+	void HandleOnLoadStarted();
+
+public:
+	UPROPERTY(BlueprintAssignable, Category = "Custom Web Browser|Event")
+	FOnLoadStarted OnLoadStarted;
 	
 //////////////////////////////////////////////////////////////////////////
 /// OnLoadCompleted

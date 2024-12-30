@@ -45,6 +45,7 @@ TSharedRef<SWidget> UCustomWebBrowser::RebuildWidget()
 			.OnBeforePopup(BIND_UOBJECT_DELEGATE(FOnBeforePopupDelegate, HandleOnBeforePopup))
 			.OnBeforeNavigation(BIND_UOBJECT_DELEGATE(FOnBeforeBrowse, HandleOnBeforeBrowse))
 			.OnLoadUrl(BIND_UOBJECT_DELEGATE(FOnLoadUrl, HandleOnLoadUrl))
+			.OnLoadStarted(BIND_UOBJECT_DELEGATE(FOnLoadStartedDelegate, HandleOnLoadStarted))
 			.OnLoadCompleted(BIND_UOBJECT_DELEGATE(FOnLoadCompletedDelegate, HandleOnLoadCompleted));
 
 		return WebBrowserWidget.ToSharedRef();
@@ -194,6 +195,31 @@ bool UCustomWebBrowser::HandleOnLoadUrl(const FString& Method, const FString& Ur
 	Logging(FString::Printf(TEXT("HandleOnLoadUrl: Method={%s}, Url={%s}, Response={%s}"), *Method, *Url, *Response));
 	
 	return false;
+}
+
+void UCustomWebBrowser::HandleOnLoadStarted()
+{
+	Logging(TEXT("HandleOnLoadStarted"));
+
+	if (OnLoadStarted.IsBound())
+	{
+		if (IsInGameThread())
+		{
+			OnLoadStarted.Broadcast();
+		}
+		else
+		{
+			// Retry on the GameThread.
+			TWeakObjectPtr<UCustomWebBrowser> WeakThis = this;
+			FFunctionGraphTask::CreateAndDispatchWhenReady([WeakThis]()
+			{
+				if (WeakThis.IsValid())
+				{
+					WeakThis->HandleOnLoadStarted();
+				}
+			}, TStatId(), nullptr, ENamedThreads::GameThread);
+		}
+	}
 }
 
 void UCustomWebBrowser::HandleOnLoadCompleted()
