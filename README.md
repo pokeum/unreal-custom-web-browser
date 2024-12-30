@@ -31,7 +31,7 @@ Created a `Custom Web Browser` plugin by extending the `Web Browser Widget` prov
 
 ### Send and Receive
 
-You can send a message from the web view to `UCustomWebBrowserWidget`. It helps you implement a way to "control" your game from the web page.
+You can send a message from the web view to `UCustomWebBrowser`. It helps you implement a way to "control" your game from the web page.
 
 **[ ⚠️ IMPORTANT ]**
 
@@ -61,7 +61,7 @@ And you have this event listener in Unreal Engine:
   #include "Blueprint/UserWidget.h"
   #include "WebViewWidget.generated.h"
   
-  class UCustomWebBrowserWidget;
+  class UCustomWebBrowser;
   
   UCLASS()
   class UWebViewWidget : public UUserWidget
@@ -70,7 +70,7 @@ And you have this event listener in Unreal Engine:
   	
   protected:
     UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
-    UCustomWebBrowserWidget* CustomWebBrowserWidget;
+    UCustomWebBrowser* CustomWebBrowser;
   
   private:
     UFUNCTION()
@@ -79,11 +79,11 @@ And you have this event listener in Unreal Engine:
   ```
 - _WebViewWidget.cpp_
   ```cpp
-  #include "CustomWebBrowser/Public/Widget/CustomWebBrowserWidget.h"
+  #include "CustomWebBrowser/Public/Widget/CustomWebBrowser.h"
 
-  if (CustomWebBrowserWidget != nullptr)
+  if (CustomWebBrowser != nullptr)
   {
-    CustomWebBrowserWidget->OnMessageReceived.AddDynamic(this, &UWebViewWidget::OnMessageReceived);
+    CustomWebBrowser->OnMessageReceived.AddDynamic(this, &UWebViewWidget::OnMessageReceived);
   }
 
   void UWebViewWidget::OnMessageReceived(const FString& Message)
@@ -100,7 +100,7 @@ When the link is tapped, it prints:
 
 **[ 🚫 DEPRECATED ]**
 
-Besides of an HTML link, a `location.href` JavaScript will also send a message to UCustomWebBrowserWidget and trigger the event. The code below is identical to example above:
+Besides of an HTML link, a `location.href` JavaScript will also send a message to UCustomWebBrowser and trigger the event. The code below is identical to example above:
 
 ```js
 location.href = "uewebbrowser://action?key=value&anotherKey=anotherValue";
