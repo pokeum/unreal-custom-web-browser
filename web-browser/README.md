@@ -15,4 +15,4 @@
 | UE | Location |
 |---|---|
 | UE_4.26 | :file_folder: `/Users/Shared/Epic\ Games/UE_4.26/Engine/Binaries/Mac/UE4Editor-WebBrowser.dylib` |
-| UE_5.4 | :file_folder: `/Users/Shared/Epic\ Games/UE_5.4/Engine/Binaries/Mac/UnrealEditor-WebBrowser.dylib` |
+| UE_5.7 | :file_folder: `/Users/Shared/Epic\ Games/UE_5.7/Engine/Binaries/Mac/UnrealEditor-WebBrowser.dylib` |

@@ -4,7 +4,7 @@ Created a `Custom Web Browser` plugin by extending the `Web Browser Widget` prov
 
 ## Integrating the Plugin
 
-1. Copy [`demo/Plugins/CustomWebBrowser`](demo/Plugins/CustomWebBrowser) into your own app's Plugin folder.
+1. Copy [`demo/Shared/Plugins/CustomWebBrowser`](demo/Shared/Plugins/CustomWebBrowser) into your own app's Plugin folder.
 
 2. Copy the `CustomWebBrowser` folder into it. You should have something like:
    
@@ -31,87 +31,70 @@ Created a `Custom Web Browser` plugin by extending the `Web Browser Widget` prov
 
 ### Send and Receive
 
-You can send a message from the web view to `UCustomWebBrowser`. It helps you implement a way to "control" your game from the web page.
+You can send a message from the web view to `CustomWebBrowser`. It helps you implement a way to "control" your game from the web page.
 
-<details>
-<summary><b>[ 🚫 DEPRECATED ]</b></summary><br/>
-
-By using the **HandleOnBeforeBrowse** method, Custom Web Browser inspects all links starts from `uewebbrowser://` by default. That means if your user taps a link starting with **"uewebbrowser"**, an OnMessageReceived event will be raised with an URL string as its parameter.
+By using the **OnBeforeNavigation** method, Custom Web Browser inspects all links starts from `uewebbrowser://` by default. That means if your user taps a link starting with "uewebbrowser://", an OnMessageReceived event will be raised with the remainder of the URL after the scheme as its parameter.
 
 If you have this on your page:
-
 ```html
 <a href="uewebbrowser://action?key=value&anotherKey=anotherValue">Tap Me</a>
 ```
 
-And you have event listener in Unreal Engine.    
-When the link is tapped, it prints: `uewebbrowser://action?key=value&anotherKey=anotherValue`
+And you have this event listener in Unreal Engine:
 
-</details>
+> - Header File (.h)
+>   ```hpp
+>   #pragma once
+>   
+>   #include "Blueprint/UserWidget.h"
+>   #include "WebViewWidget.generated.h"
+>     
+>   class UCustomWebBrowser;
+>
+>   UCLASS()
+>   class DEMO_API UMainMenuWidget : public UUserWidget
+>   {
+>      GENERATED_BODY()
+>
+>   ...
+>   
+>   protected:
+>      UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
+>      UCustomWebBrowser* CustomWebBrowser;
+>   
+>   private:
+>      UFUNCTION()
+>      void OnMessageReceived(FString Message);
+>   };
+>   ```
+> - Source File (.cpp)
+>   ```cpp
+>   #include "Widget/CustomWebBrowser.h"
+>   
+>   if (CustomWebBrowser != nullptr)
+>   {
+>      CustomWebBrowser->OnMessageReceived.AddDynamic(this, &UMainMenuWidget::OnMessageReceived);
+>   }
+>   
+>   void UMainMenuWidget::OnMessageReceived(FString Message)
+>   {
+>      UE_LOG(LogTemp, Warning, TEXT("%s"), *Message);
+>   }
+>   ```
 
-> [!CAUTION]
-> The functionality where an OnMessageReceived event is raised when a user taps a link starting with "uewebbrowser" does not work in the iOS build of Unreal Engine v5.4.
-
-If you have this event listener in Unreal Engine:
-
-- _WebViewWidget.h_
-  ```cpp
-  #pragma once
-  
-  #include "Blueprint/UserWidget.h"
-  #include "WebViewWidget.generated.h"
-  
-  class UCustomWebBrowser;
-  
-  UCLASS()
-  class UWebViewWidget : public UUserWidget
-  {
-    GENERATED_BODY()
-  	
-  protected:
-    UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
-    UCustomWebBrowser* CustomWebBrowser;
-  
-  private:
-    UFUNCTION()
-    void OnMessageReceived(const FString& Message);
-  };
-  ```
-- _WebViewWidget.cpp_
-  ```cpp
-  #include "CustomWebBrowser/Public/Widget/CustomWebBrowser.h"
-
-  if (CustomWebBrowser != nullptr)
-  {
-    CustomWebBrowser->OnMessageReceived.AddDynamic(this, &UWebViewWidget::OnMessageReceived);
-  }
-
-  void UWebViewWidget::OnMessageReceived(const FString& Message)
-  {
-    UE_LOG(LogTemp, Warning, TEXT("%s"), *Message);
-  }
-  ```
-
-And you run JavaScript code below:
-
-```js
-window.ue.uewebbrowser.sendmessage("action?key=value&anotherKey=anotherValue")
+When the link is tapped, it prints:
+```
+action?key=value&anotherKey=anotherValue
 ```
 
-it prints: `action?key=value&anotherKey=anotherValue`
-
-<details>
-<summary><b>[ 🚫 DEPRECATED ]</b></summary><br/>
-
-#### NAVIGATION
-
-Besides of an HTML link, a `location.href` JavaScript will also send a message to UCustomWebBrowser and trigger the event. The code below is identical to example above:
-
-```js
-location.href = "uewebbrowser://action?key=value&anotherKey=anotherValue";
-```
-
-</details>
+> [!TIP]
+> **NAVIGATION**<br/>
+> 
+> Besides of an HTML link, a `location.href` JavaScript will also send a message to CustomWebBrowser and trigger the event.
+> The code below is identical to example above:
+> ```js
+> location.href = "uewebbrowser://action?key=value&anotherKey=anotherValue";
+> ```
 
 ## Reference
 

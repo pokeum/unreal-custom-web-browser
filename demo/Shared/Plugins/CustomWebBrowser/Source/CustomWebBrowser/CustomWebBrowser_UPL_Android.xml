@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- init section is always evaluated once per architecture -->
+    <init>
+    </init>
+
+    <gameActivityClassAdditions>
+        <insert>
+            public void cwbLogVerbose(String tag, String msg) { android.util.Log.v(tag, msg); }
+            public void cwbLogDebug(String tag, String msg) { android.util.Log.d(tag, msg); }
+            public void cwbLogInfo(String tag, String msg) { android.util.Log.i(tag, msg); }
+            public void cwbLogWarn(String tag, String msg) { android.util.Log.w(tag, msg); }
+            public void cwbLogError(String tag, String msg) { android.util.Log.e(tag, msg); }
+            public void cwbLogAssert(String tag, String msg) { android.util.Log.wtf(tag, msg); }
+        </insert>
+    </gameActivityClassAdditions>
+</root>
