@@ -33,7 +33,7 @@ Created a `Custom Web Browser` plugin by extending the `Web Browser Widget` prov
 
 You can send a message from the web view to `CustomWebBrowser`. It helps you implement a way to "control" your game from the web page.
 
-By using the **OnBeforeNavigation** method, Custom Web Browser inspects all links starts from `uewebbrowser://` by default. That means if your user taps a link starting with "uewebbrowser://", an OnMessageReceived event will be raised with the remainder of the URL after the scheme as its parameter.
+By binding **HandleOnBeforeBrowse** method to the OnBeforeNavigation event, using an FOnBeforeBrowse delegate, Custom Web Browser inspects all links starts from `uewebbrowser://` by default. That means if your user taps a link starting with "uewebbrowser://", an OnMessageReceived event will be raised with the remainder of the URL after the scheme as its parameter.
 
 If you have this on your page:
 ```html
@@ -95,6 +95,16 @@ action?key=value&anotherKey=anotherValue
 > ```js
 > location.href = "uewebbrowser://action?key=value&anotherKey=anotherValue";
 > ```
+
+### SWebBrowser::BindUObject
+
+By using [`SWebBrowser::BindUObject`](https://dev.epicgames.com/documentation/en-us/unreal-engine/API/Runtime/WebBrowser/SWebBrowser/BindUObject),
+the CustomWebBrowser instance is exposed to the browser runtime, enabling JavaScript in the page to directly invoke methods on the C++ side.
+
+For example, the following JavaScript snippet produces the same result as the code shown above.
+```js
+window.ue.uewebbrowser.sendmessage("action?key=value&anotherKey=anotherValue")
+```
 
 ## Reference
 
